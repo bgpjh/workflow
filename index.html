@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>자동 슬라이드쇼</title>
+    <style>
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; }
+        iframe { width: 100%; height: 100%; border: none; transition: opacity 0.5s; }
+    </style>
+</head>
+<body>
+
+    <iframe id="slideFrame" src=""></iframe>
+
+    <script>
+        const displayTime = 10000; // 10초마다 다음 파일로 전환
+        let slideFiles = [];
+        let currentIndex = 0;
+        const frame = document.getElementById('slideFrame');
+
+        async function init() {
+            try {
+                // 1. Action이 만든 파일 목록 읽기 (캐시 방지를 위해 시간값 추가)
+                const res = await fetch('list.json?t=' + Date.now());
+                slideFiles = await res.json();
+
+                if (slideFiles.length > 0) {
+                    startSlideshow();
+                } else {
+                    document.body.innerHTML = "<h2 style='color:white; text-align:center;'>slides 폴더에 HTML 파일이 없습니다.</h2>";
+                }
+            } catch (e) {
+                console.error("목록을 가져오지 못했습니다.", e);
+            }
+        }
+
+        function startSlideshow() {
+            showNext();
+            setInterval(showNext, displayTime);
+        }
+
+        function showNext() {
+            // slides/ 폴더 경로와 파일명을 합쳐서 로드
+            frame.src = 'slides/' + slideFiles[currentIndex];
+            currentIndex = (currentIndex + 1) % slideFiles.length;
+        }
+
+        init();
+    </script>
+</body>
+</html>
