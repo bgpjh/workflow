@@ -1,0 +1,46 @@
+name: Generate Slide List
+on: 
+  push:
+    paths:
+      - 'slides/**'
+  workflow_dispatch: # 버튼 눌러서 강제로 실행할 수 있게 추가
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Debug - List Files
+        run: |
+          echo "### 현재 폴더 구조 확인 ###"
+          ls -R
+          
+      - name: Create JSON List
+        run: |
+          echo "### JSON 생성 시작 ###"
+          # slides 폴더가 없으면 에러가 아닌 경고만 내고 빈 배열 생성
+          if [ -d "slides" ]; then
+            echo "[" > list.json
+            find slides -maxdepth 1 -name "*.html" -exec basename {} \; | sort | sed 's/.*/  "&",/' | sed '$ s/,$//' >> list.json
+            echo "]" >> list.json
+          else
+            echo "[]" > list.json
+            echo "WARNING: slides 폴더를 찾을 수 없습니다!"
+          fi
+          cat list.json
+
+      - name: Commit and Push
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add list.json
+          # 강제로 변경사항이 있는지 확인하고 푸시
+          if git diff --staged --quiet; then
+            echo "변경사항이 없어 푸시를 건너뜁니다."
+          else
+            git commit -m "Update slide list (Auto)"
+            git push
+          fi
