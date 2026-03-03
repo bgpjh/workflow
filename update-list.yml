@@ -1,0 +1,29 @@
+name: Generate Slide List
+on: 
+  push:
+    paths:
+      - 'slides/**' # slides 폴더 내 파일이 바뀔 때만 실행
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Create JSON List
+        run: |
+          # slides 폴더 내의 모든 .html 파일 이름을 추출하여 list.json 생성
+          # 파일명에 공백이 있어도 처리 가능하도록 구성
+          echo "[" > list.json
+          find slides -name "*.html" -exec basename {} \; | sort | sed 's/.*/  "&",/' | sed '$ s/,$//' >> list.json
+          echo "]" >> list.json
+
+      - name: Commit and Push
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add list.json
+          # 변경사항이 있을 때만 커밋
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Update slide list" && git push)
