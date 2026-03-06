@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>26년 2월 원재료 매입대비 매출현황</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --surface: #111827;
+    --surface2: #1a2235;
+    --border: #1e2d45;
+    --accent: #00d4ff;
+    --accent2: #ff6b35;
+    --green: #00e676;
+    --red: #ff3d71;
+    --yellow: #ffd740;
+    --text: #e2e8f0;
+    --text-dim: #64748b;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans KR', sans-serif;
+    padding: 20px 15%;
+    background-image:
+      radial-gradient(ellipse at 10% 10%, rgba(0,212,255,0.05) 0%, transparent 50%),
+      radial-gradient(ellipse at 90% 90%, rgba(255,107,53,0.04) 0%, transparent 50%);
+  }
+
+  /* Header */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 12px;
+  }
+  .header-title { font-size: 22px; font-weight: 900; letter-spacing: -0.5px; color: #fff; }
+  .header-title span { color: var(--accent); }
+  .header-sub { font-size: 12px; color: var(--text-dim); margin-top: 4px; }
+  .header-date { text-align: right; font-size: 14px; color: var(--accent); font-family: 'JetBrains Mono', monospace; font-weight: 600; line-height: 1.6; }
+  .header-date span { display: block; font-size: 11px; color: var(--text-dim); font-weight: 400; }
+
+  /* KPI */
+  .kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+  .kpi-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .kpi-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; }
+  .kpi-card.blue::before   { background: var(--accent); }
+  .kpi-card.orange::before { background: var(--accent2); }
+  .kpi-label { font-size: 11px; color: var(--text-dim); margin-bottom: 6px; }
+  .kpi-value { font-size: 28px; font-weight: 700; font-family: 'JetBrains Mono', monospace; letter-spacing: -1px; color: #fff; margin-bottom: 10px; }
+  .kpi-divider { height: 1px; background: var(--border); margin-bottom: 12px; }
+  .kpi-bottom-row { display: grid; grid-template-columns: 1fr 1px 1fr; align-items: start; }
+  .kpi-vdivider { background: var(--border); align-self: stretch; }
+  .kpi-sub-block { padding: 0 16px 0 0; }
+  .kpi-sub-block:last-child { padding: 0 0 0 16px; }
+  .kpi-sub-label { font-size: 11px; color: var(--text-dim); margin-bottom: 4px; }
+  .kpi-sub-value { font-size: 22px; font-weight: 700; font-family: 'JetBrains Mono', monospace; letter-spacing: -0.5px; color: rgba(255,255,255,0.75); }
+  .kpi-sub-value.neg { color: var(--red); }
+  .kpi-badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; font-family: 'JetBrains Mono', monospace; margin-top: 6px; }
+  .badge-red   { background: rgba(255,61,113,0.15); color: var(--red); }
+  .badge-green { background: rgba(0,230,118,0.15);  color: var(--green); }
+
+  /* Table */
+  .section-label { font-size: 11px; color: var(--accent); letter-spacing: 2px; margin-bottom: 6px; font-family: 'JetBrains Mono', monospace; }
+  .table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  thead tr { background: var(--surface2); }
+  .th-group {
+    text-align: center; font-size: 10px; font-weight: 600; color: var(--text-dim);
+    letter-spacing: 0.5px; padding: 6px 8px 4px;
+    border-bottom: 1px solid var(--border); border-right: 1px solid var(--border);
+  }
+  .th-group.accent { color: var(--accent); }
+  .th-group.orange { color: var(--accent2); }
+  .th-group.yellow { color: var(--yellow); }
+  th {
+    padding: 5px 10px; text-align: center; font-size: 11px; font-weight: 500;
+    color: var(--text-dim); white-space: nowrap;
+    border-right: 1px solid var(--border); border-bottom: 2px solid var(--border);
+  }
+  th:last-child { border-right: none; }
+  td {
+    padding: 6px 10px; border-bottom: 1px solid rgba(30,45,69,0.6);
+    border-right: 1px solid rgba(30,45,69,0.4);
+    white-space: nowrap; font-family: 'JetBrains Mono', monospace; font-size: 12px;
+  }
+  td:last-child { border-right: none; }
+  td.text-cell { font-family: 'Noto Sans KR', sans-serif; font-size: 12px; font-weight: 500; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(0,212,255,0.03); }
+  .row-total td { background: rgba(0,212,255,0.05); border-top: 1px solid rgba(0,212,255,0.25); font-weight: 700; color: var(--accent); }
+  .bar-inline-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+  }
+  .bar-inline {
+    height: 10px;
+    border-radius: 2px;
+    flex-shrink: 0;
+    opacity: 0.75;
+  }
+  .center { text-align: center; }
+  .val-pos  { color: var(--green); }
+  .val-neg  { color: var(--red); }
+  .val-zero { color: var(--text-dim); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <div class="header-title"><span>26년 2월</span> 원재료 매입대비 매출현황</div>
+    <div class="header-sub">2. 매입매출요약 · 수불현황</div>
+  </div>
+  <div class="header-date">2026-03-03<span>작성일자</span></div>
+</div>
+
+<div class="kpi-grid">
+  <div class="kpi-card blue">
+    <div class="kpi-label">총 재료 매입량 (KG)</div>
+    <div class="kpi-value">172,855</div>
+    <div class="kpi-divider"></div>
+    <div class="kpi-bottom-row">
+      <div class="kpi-sub-block">
+        <div class="kpi-sub-label">매출 소요량 (KG)</div>
+        <div class="kpi-sub-value">186,641</div>
+      </div>
+      <div class="kpi-vdivider"></div>
+      <div class="kpi-sub-block">
+        <div class="kpi-sub-label">매입 대비 과매입 (KG)</div>
+        <div class="kpi-sub-value neg">-13,787</div>
+        <div class="kpi-badge badge-red">-3.80% 감소</div>
+      </div>
+    </div>
+  </div>
+  <div class="kpi-card orange">
+    <div class="kpi-label">매입 금액 (원)</div>
+    <div class="kpi-value">591,591,500</div>
+    <div class="kpi-divider"></div>
+    <div class="kpi-bottom-row">
+      <div class="kpi-sub-block">
+        <div class="kpi-sub-label">매출 소요 재료비 (원)</div>
+        <div class="kpi-sub-value">614,932,143</div>
+      </div>
+      <div class="kpi-vdivider"></div>
+      <div class="kpi-sub-block">
+        <div class="kpi-sub-label">매출 금액 (원)</div>
+        <div class="kpi-sub-value">2,608,188,217</div>
+        <div class="kpi-badge badge-green">가이드 2,287,739 EA</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section-label">▸ 품목별 매입·매출 상세 현황</div>
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th rowspan="2" style="width:34px">No</th>
+        <th rowspan="2" class="text-cell" style="min-width:90px;text-align:left;padding-left:12px">구분</th>
+        <th colspan="2" class="th-group accent" style="border-right:2px solid #1e3a5f">매 입</th>
+        <th colspan="2" class="th-group orange" style="border-right:2px solid #3d2010">매 출</th>
+        <th colspan="3" class="th-group yellow" style="border-right:2px solid #3d3000">과매입 (매입-매출)</th>
+        <th colspan="2" class="th-group" style="border-right:none">매출 현황</th>
+      </tr>
+      <tr>
+        <th>매입량 (KG)</th>
+        <th style="border-right:2px solid #1e3a5f">매입금액 (원)</th>
+        <th>매출 소요량 (KG)</th>
+        <th style="border-right:2px solid #3d2010">매출소요 재료비 (원)</th>
+        <th>재료량 (KG)</th>
+        <th>금액 (원)</th>
+        <th style="border-right:2px solid #3d3000">비율</th>
+        <th>매출수량 (EA)</th>
+        <th>매출금액 (원)</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+  </table>
+</div>
+
+<script>
+const data = [
+  { no:1,  name:'가이드',        buyKg:52180,  buyAmt:282354750,  sellKg:54109.56, sellAmt:293764816, diffKg:-1929.56,  diffAmt:-11410066,  ratio:-0.03566, saleQty:2287739, saleAmt:1466912862 },
+  { no:2,  name:'커버',          buyKg:17000,  buyAmt:15418000,   sellKg:13149.48, sellAmt:22445570,  diffKg:-3649.48,  diffAmt:-7027570,   ratio:-0.34,    saleQty:47860,   saleAmt:54515120 },
+  { no:3,  name:'계량기',        buyKg:4800,   buyAmt:13440000,   sellKg:5745.68,  sellAmt:17275164,  diffKg:-945.68,   diffAmt:-3835164,   ratio:-0.16459, saleQty:57428,   saleAmt:39767532 },
+  { no:4,  name:'인류클램프',    buyKg:8500,   buyAmt:19805000,   sellKg:1344,     sellAmt:3131520,   diffKg:7156,      diffAmt:16673480,   ratio:5.324,    saleQty:2240,    saleAmt:6496000 },
+  { no:5,  name:'제일전기',      buyKg:10725,  buyAmt:47833750,   sellKg:10697.11, sellAmt:44326587,  diffKg:27.89,     diffAmt:3507163,    ratio:0.0026,   saleQty:848471,  saleAmt:95545732 },
+  { no:6,  name:'NX4',           buyKg:70300,  buyAmt:38371500,   sellKg:41930.31, sellAmt:79877242,  diffKg:-22430.31, diffAmt:-41505742,  ratio:-0.53494, saleQty:137595,  saleAmt:576828012 },
+  { no:7,  name:'LX2',           buyKg:0,      buyAmt:0,          sellKg:0,        sellAmt:0,         diffKg:0,         diffAmt:0,          ratio:0,        saleQty:0,       saleAmt:0 },
+  { no:8,  name:'LX3',           buyKg:50800,  buyAmt:119603500,  sellKg:50079,    sellAmt:116971030, diffKg:721,       diffAmt:2632470,    ratio:0.014397, saleQty:74569,   saleAmt:189380549 },
+  { no:9,  name:'LX3 암레스트',  buyKg:9250,   buyAmt:40325000,   sellKg:3914.75,  sellAmt:16542465,  diffKg:5335.25,   diffAmt:23782535,   ratio:1.362859, saleQty:36210,   saleAmt:13579977 },
+  { no:10, name:'퀵커넥터',      buyKg:0,      buyAmt:0,          sellKg:1577.24,  sellAmt:10015487,  diffKg:-1577.24,  diffAmt:-10015487,  ratio:-1,       saleQty:75400,   saleAmt:63789500 },
+  { no:11, name:'리비안/루시드', buyKg:0,      buyAmt:0,          sellKg:2825.79,  sellAmt:8171878,   diffKg:-2825.79,  diffAmt:-8171878,   ratio:-1,       saleQty:64395,   saleAmt:23542881 },
+  { no:12, name:'MX5 암레스트',  buyKg:7600,   buyAmt:14440000,   sellKg:1268.62,  sellAmt:2410386,   diffKg:6331.38,   diffAmt:12029614,   ratio:4.990743, saleQty:28581,   saleAmt:6409891 },
+  { no:13, name:'기타',          buyKg:0,      buyAmt:0,          sellKg:0,        sellAmt:0,         diffKg:0,         diffAmt:0,          ratio:0,        saleQty:0,       saleAmt:71420161 },
+];
+
+const fmt  = n => n === 0 ? '<span class="val-zero">-</span>' : n.toLocaleString('ko-KR', {maximumFractionDigits:0});
+const fmtK = n => n === 0 ? '<span class="val-zero">-</span>' : n.toLocaleString('ko-KR', {maximumFractionDigits:2});
+const fmtR = r => {
+  if (r === 0) return '<span class="val-zero">-</span>';
+  const pct = (r * 100).toFixed(2) + '%';
+  return `<span class="${r > 0 ? 'val-pos' : 'val-neg'}">${r > 0 ? '+' : ''}${pct}</span>`;
+};
+const dc = v => v > 0 ? 'val-pos' : v < 0 ? 'val-neg' : 'val-zero';
+
+const maxBuy  = Math.max(...data.map(d => d.buyKg));
+const maxSell = Math.max(...data.map(d => d.sellKg));
+
+const barCell = (val, max, color) => {
+  if (val === 0) return '<span class="val-zero">-</span>';
+  const w = Math.round(val / max * 60);
+  return `<div class="bar-inline-wrap">
+    <span>${val.toLocaleString('ko-KR', {maximumFractionDigits:2})}</span>
+    <div class="bar-inline" style="width:${w}px;background:${color}"></div>
+  </div>`;
+};
+
+const tbody = document.getElementById('tableBody');
+data.forEach(d => {
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td class="center" style="color:var(--text-dim);font-size:11px">${d.no}</td>
+    <td class="text-cell" style="font-weight:600;color:#fff;padding-left:12px">${d.name}</td>
+    <td class="num">${barCell(d.buyKg, maxBuy, "#00d4ff")}</td>
+    <td class="num" style="border-right:2px solid #1e3a5f">${fmt(d.buyAmt)}</td>
+    <td class="num">${barCell(d.sellKg, maxSell, "#ff6b35")}</td>
+    <td class="num" style="border-right:2px solid #3d2010">${fmt(d.sellAmt)}</td>
+    <td class="num"><span class="${dc(d.diffKg)}">${fmtK(d.diffKg)}</span></td>
+    <td class="num"><span class="${dc(d.diffAmt)}">${fmt(d.diffAmt)}</span></td>
+    <td class="num" style="border-right:2px solid #3d3000">${fmtR(d.ratio)}</td>
+    <td class="num">${fmt(d.saleQty)}</td>
+    <td class="num">${fmt(d.saleAmt)}</td>
+  `;
+  tbody.appendChild(tr);
+});
+
+const tot = document.createElement('tr');
+tot.className = 'row-total';
+tot.innerHTML = `
+  <td colspan="2" style="font-family:'Noto Sans KR';font-weight:700;padding-left:12px">TOTAL</td>
+  <td class="num">172,855</td>
+  <td class="num" style="border-right:2px solid #1e3a5f">591,591,500</td>
+  <td class="num">186,641.53</td>
+  <td class="num" style="border-right:2px solid #3d2010">614,932,143</td>
+  <td class="num"><span class="val-neg">-13,786.53</span></td>
+  <td class="num"><span class="val-neg">-23,340,643</span></td>
+  <td class="num" style="border-right:2px solid #3d3000"><span class="val-neg">-3.80%</span></td>
+  <td class="num">3,660,488</td>
+  <td class="num">2,608,188,217</td>
+`;
+tbody.appendChild(tot);
+</script>
+</body>
+</html>
